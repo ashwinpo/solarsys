@@ -8,7 +8,7 @@ let newsys = {  "username": "",
                 "planets": []};
 
 function preload() {
-  let url = "http://127.0.0.1:5000/get_config"
+  let url = "https://solar-sys.herokuapp.com/get_config"
   config = loadJSON(url);
 }
 
@@ -128,9 +128,9 @@ function collide(){
    }
 }
 function add2sys(){
-  let url = "http://127.0.0.1:5000/save";
+  let url = "https://solar-sys.herokuapp.com/save";
   res = httpPost(url, 'json', newsys)
-  window.location.replace('http://127.0.0.1:5000/sys_frame');
+  window.location.replace('https://solar-sys.herokuapp.com/sys_frame');
 }
 
 function saveP(p, newsys){

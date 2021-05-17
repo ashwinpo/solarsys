@@ -1,7 +1,7 @@
 let config = {}
 
 function preload() {
-  let url = "http://127.0.0.1:5000/get_config"
+  let url = "https://solar-sys.herokuapp.com/get_config"
   config = loadJSON(url);
 }
 

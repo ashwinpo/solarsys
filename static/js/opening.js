@@ -81,10 +81,10 @@ function cont(){
   }
   else{
     err_msg = false;
-    let url = "http://127.0.0.1:5000/save";
+    let url = "https://solar-sys.herokuapp.com/save";
     res = httpPost(url, 'json', config)
     console.log(res)
-    window.location.replace('http://127.0.0.1:5000/sys_frame'); //'http://127.0.0.1:8080/sys/sys.html'
+    window.location.replace('https://solar-sys.herokuapp.com/sys_frame'); //'http://127.0.0.1:8080/sys/sys.html'
  }
 }
 
