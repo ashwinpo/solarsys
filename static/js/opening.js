@@ -2,7 +2,6 @@
 planets = []
 let button, input;
 let err_msg = false;
-let err_name = false;
 
 function setup() {
   createCanvas(windowWidth,windowHeight);
@@ -18,12 +17,9 @@ function setup() {
   button = createButton("Continue");
   button.mouseClicked(cont);
   button.size(100,50);
-  button.position(windowWidth - 200, windowHeight - 75)//windowHeight-30,windowWidth - 100);
+  button.position(windowWidth - 200, windowHeight - 75)
   button.style("font-family", "Helvetica");
   button.style("font-size", "20px");
-
-  input = createInput()
-  input.position(windowWidth - 400, windowHeight - 75)
 
 }
 
@@ -49,8 +45,6 @@ function draw() {
   textFont('Helvetica')
   text('Select 3 Planets for your System', 30, 100);
 
-  textSize(16);
-  text('Enter username (new or old)', windowWidth - 400, windowHeight - 100);
 
   if(err_msg){
     textSize(18);
@@ -59,12 +53,6 @@ function draw() {
     text('Please select 3 planets', windowWidth-250, 100);
   }
 
-  else if (err_name) {
-    textSize(18);
-    fill(0,100,100)
-    textFont('Helvetica')
-    text('Please enter username', windowWidth-250, 100);
-  }
 
 
   for(let y = 0; y < 5; y++){
@@ -92,13 +80,8 @@ function cont(){
   if(count != 3){
     err_msg = true;
   }
-  else if (input.value().length == 0) {
-    err_msg = false;
-    err_name = true;
-  }
   else{
     err_msg = false;
-    err_name=false;
     storeItem('username', config.username)
     let url = 'http://3.15.100.29/api'; //"http://127.0.0.1:8001/api";
     res = httpPost(url, 'json', config)

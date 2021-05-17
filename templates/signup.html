@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+
+<html lang="">
+<head>
+  <title>Login</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <meta property="og:title" content="Signup">
+  <meta property="og:description" content="Signup page">
+  <link rel="stylesheet" href="{{ url_for('static', filename= 'css/style.css') }}">
+
+</head>
+<body>
+
+  <div class="header">
+    <h1>SolarSys</h1>
+    <p>Design <b>your own</b> solar system.</p>
+  </div>
+
+  <div class="navbar">
+    <a href="/">Home</a>
+    <a href="sys">Your System</a>
+    <a href="collider">Collider</a>
+    <a href="#">Market</a>
+    <a href="signup" class="right">Sign Up</a>
+    <a href="login" class="right">Log in</a>
+  </div>
+
+  {% if error %}
+    <br>
+    <p class=error><strong>Error:</strong> {{ error }}
+  {% endif %}
+
+  <form action="" method="post">
+
+    <div class="container">
+      <label for="username"><b>Username</b></label>
+      <input type="text" placeholder="Enter Username" name="username" required>
+      <br>
+      <label for="psw"><b>Password</b></label>
+      <input type="password" placeholder="Enter Password" name="psw" required>
+      <br>
+      <label for="cpsw"><b>Confirm Password</b></label>
+      <input type="password" placeholder="Enter Password" name="cpsw" required>
+      <button class="loginbtn" type="submit">Sign Up</button>
+      <br>
+    </div>
+  </form>
+</body>
+</html>

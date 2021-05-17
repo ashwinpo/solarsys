@@ -88,7 +88,6 @@ body {
   padding: 20px;
 }
 
-/* Fake image, just for this example */
 .iframe {
   height: auto;
   width: 100%;
@@ -97,6 +96,70 @@ body {
 
 iframe{
   border-width: 0px;
+}
+
+/* Bordered form */
+form {
+  border: 0px solid #f1f1f1;
+  margin: 0 auto;
+  width:50%;
+  padding-top: 50px;
+  padding-left: 20px;
+
+}
+
+label {
+  display: inline-block;
+  text-align: left;
+  width: 60px;
+  line-height: 26px;
+  margin-bottom: 0px;
+  margin-top: 10px;
+  margin-right: 40px;
+}
+
+/* Full-width inputs */
+input[type=text], input[type=password] {
+  display: inline-block;
+  width: 40%;
+  padding: 12px 20px;
+  margin: 8px 10px;
+  display: inline-block;
+  border: 1px solid #ccc;
+  box-sizing: border-box;
+  margin-right: 20px;
+}
+
+/* Set a style for all buttons */
+.loginbtn {
+  background-color: #04AA6D;
+  color: white;
+  padding: 14px 20px;
+  margin: 8px 0;
+  border: none;
+  cursor: pointer;
+  width: auto;
+}
+
+/* Add a hover effect for buttons */
+.loginbtn:hover {
+  opacity: 0.8;
+}
+
+
+.error{
+	color: #D8000C;
+	background-color: #FFBABA;
+  width: 50%;
+  margin: auto;
+
+}
+
+/* Extra style for the cancel button (red) */
+.cancelbtn {
+  width: auto;
+  padding: 10px 18px;
+  background-color: #f44336;
 }
 
 /* Footer */
