@@ -1,8 +1,7 @@
 let config = {}
 
 function preload() {
-  // Get the most recent planets
-  let url = 'static/data.txt';
+  let url = "http://127.0.0.1:5000/get_config"
   config = loadJSON(url);
 }
 

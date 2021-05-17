@@ -8,14 +8,8 @@ let newsys = {  "username": "",
                 "planets": []};
 
 function preload() {
-  // Get the most recent planets
-  let url = 'http://3.15.100.29/sketch'; // "http://127.0.0.1:8001/sketch"// //'
-  username = getItem("username")
-  console.log(username)
-  httpPost(url, 'json', {'username': username}).then((data) => {
-    config = data
-    })
-  console.log(config)
+  let url = "http://127.0.0.1:5000/get_config"
+  config = loadJSON(url);
 }
 
 planets = []
@@ -26,9 +20,6 @@ function setup() {
   createCanvas(windowWidth,windowHeight);
   colorMode(HSB);
 
-  if(!config.sun){
-    return
-  }
   numPlanets = config.planets.length
   for (let i = 0; i < numPlanets; i++) {
     planetPos = {'x': windowWidth/(numPlanets + 1) * i + 300, 'y':windowHeight/2}
@@ -50,15 +41,8 @@ function setup() {
   button.style("font-size", "20px");
 }
 
-setuped = false
 function draw() {
-  if(!config.sun){
-    return
-  }
-  else if(!setuped){
-    setup()
-    setuped = true
-  }
+
   let c1 = color(236, 68, 1)
   let c2 = color(236, 68, 20)
   //background(236, 68, 10)
@@ -116,8 +100,7 @@ function collide(){
    }
    if(count != 2){
      err_msg = true;
-     newsys = {  "username": input.value(),
-                     "sun":{
+     newsys = { "sun":{
                        "col": [60, 100, 100],
                        "d": 150 },
                      "planets": []};
@@ -143,17 +126,11 @@ function collide(){
       saveP(child, newsys)
 
    }
-  //   let url = "http://127.0.0.1:8001/"; //'http://3.15.100.29/api';
-  //   res = httpPost(url, 'json', config)
-  //   window.location.replace('http://127.0.0.1:8080/sys/sys.html');
-  // }
 }
 function add2sys(){
-  let url = 'http://3.15.100.29/api'; //"http://127.0.0.1:8001/api"; //
-  username = getItem("username")
-  newsys.username = username
+  let url = "http://127.0.0.1:5000/save";
   res = httpPost(url, 'json', newsys)
-  window.location.replace("http://3.15.100.29/sys/sys.html"); //'http://127.0.0.1:8080/sys/sys.html');
+  window.location.replace('http://127.0.0.1:5000/sys_frame');
 }
 
 function saveP(p, newsys){

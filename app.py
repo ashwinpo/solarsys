@@ -8,6 +8,7 @@ import sqlite3
 import uuid
 import hashlib
 
+
 app = Flask(__name__)
 app.secret_key = "ultivillage"
 CORS(app)
@@ -19,7 +20,6 @@ DATABASE= os.path.join(
 def get_db():
     db = getattr(g, '_database', None)
     if db is None:
-        print(DATABASE)
         db = g._database = sqlite3.connect('sql/planets.db')
     return db
 
@@ -36,7 +36,7 @@ def show_index():
     if 'username' not in session:
         return redirect(url_for('login'))
     context = {}
-    return render_template("index.html", **context, iframe= "opening_frame")
+    return render_template("index.html", **context, iframe= "opening_frame", log = "Log Out")
 
 
 @app.route('/sys', methods=['GET'])
@@ -46,7 +46,7 @@ def show_sys():
         return redirect(url_for('login'))
 
     context = {}
-    return render_template("index.html", **context, iframe="sys_frame")
+    return render_template("index.html", **context, iframe="sys_frame", log = "Log Out")
 
 @app.route('/collider', methods=['GET'])
 def show_collider():
@@ -55,7 +55,7 @@ def show_collider():
         return redirect(url_for('login'))
 
     context = {}
-    return render_template("index.html", **context, iframe="collider_frame")
+    return render_template("index.html", **context, iframe="collider_frame", log = "Log Out")
 
 ######## iframes #############
 
@@ -69,6 +69,7 @@ def show_opening_frame():
             Where username= ? '''
     content = get_db().cursor().execute(sql, (session['username'],)).fetchone()
     if content:
+        session["content"] = content[0]
         return redirect('sys_frame')
     context = {}
     return render_template("opening.html", **context)
@@ -84,6 +85,7 @@ def save():
           VALUES(?,?) '''
     get_db().cursor().execute(sql,(session['username'], json.dumps(content)))
     get_db().commit()
+    session["content"] = json.dumps(content)
     context = {}
     return render_template("sys.html", **context)
 
@@ -92,20 +94,53 @@ def show_sys_frame():
     """Display sys frame."""
     if 'username' not in session:
         return redirect(url_for('login'))
-    sql = ''' SELECT json FROM planets
-            Where username= ? '''
-    content = get_db().cursor().execute(sql, (session['username'],)).fetchone()
-    if not content:
-        return redirect('opening_frame')
-    data = json.loads(content[0])
+    if 'content' not in session:
+        sql = ''' SELECT json FROM planets
+                Where username= ? '''
+        content = get_db().cursor().execute(sql, (session['username'],)).fetchone()
+
+        if not content:
+            return redirect('opening_frame')
+        else:
+            session["content"] = content[0]
+    data = json.loads(session["content"])
     with open('static/data.txt', 'w') as outfile:
         json.dump(data, outfile)
     context = {}
     return render_template("sys.html", **context)
 
+@app.route('/get_config', methods=['GET'])
+def get_config():
+    """Display sys frame."""
+    if 'username' not in session:
+        return redirect(url_for('login'))
+    if 'content' not in session:
+        sql = ''' SELECT json FROM planets
+                Where username= ? '''
+        content = get_db().cursor().execute(sql, (session['username'],)).fetchone()
+
+        if not content:
+            return redirect('opening_frame')
+        else:
+            session["content"] = content[0]
+    resp = jsonify(json.loads(session["content"]))
+    context = {}
+    return resp
+
 @app.route('/collider_frame', methods=['GET'])
 def show_collider_frame():
     """Display collider frame."""
+    if 'username' not in session:
+        return redirect(url_for('login'))
+    if 'content' not in session:
+        sql = ''' SELECT json FROM planets
+                Where username= ? '''
+        content = get_db().cursor().execute(sql, (session['username'],)).fetchone()
+
+        if not content:
+            return redirect('opening_frame')
+        else:
+            session["content"] = content[0]
 
     context = {}
     return render_template("collider.html", **context)
@@ -124,7 +159,7 @@ def show_collider_frame():
 def login():
     error = None
     if 'username' in session:
-        return redirect('/')
+        session.clear()
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['psw']
@@ -206,3 +241,9 @@ def signup():
 
     context = {}
     return render_template('signup.html', **context)
+
+@app.route('/logout')
+def logout():
+    """Account logout"""
+    session.clear()
+    return redirect("/login")
