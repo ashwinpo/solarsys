@@ -61,21 +61,21 @@ def show_collider():
 
 @app.route('/opening_frame', methods=['GET'])
 def show_opening_frame():
-    """Display / route."""
+    """Display opening frame."""
 
     context = {}
     return render_template("opening.html", **context)
 
 @app.route('/sys_frame', methods=['GET'])
 def show_sys_frame():
-    """Display / route."""
+    """Display sys frame."""
 
     context = {}
     return render_template("sys.html", **context)
 
 @app.route('/collider_frame', methods=['GET'])
 def show_collider_frame():
-    """Display / route."""
+    """Display collider frame."""
 
     context = {}
     return render_template("collider.html", **context)
@@ -93,20 +93,45 @@ def show_collider_frame():
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     error = None
+    if 'username' in session:
+        return redirect('/')
     if request.method == 'POST':
-        if 'username' in session:
-            session.pop('username')
         username = request.form['username']
         password = request.form['psw']
 
+        algorithm = 'sha512'
+        hash_obj = hashlib.new(algorithm)
+        user_exist = get_db().cursor().execute('''
+        SELECT EXISTS(
+        SELECT *
+        FROM users U
+        WHERE U.username = ?
+        ) AS user_exist
+        ''', (username,)).fetchall()
+        if user_exist[0][0] == 0:
+            return render_template('login.html', error="Invalid credentials. Please try again.")
 
-        if user and user.password == password:
-            session['username'] = user.id
-            #flash('You were successfully logged in')
-            return redirect(url_for('show_index'))
-        else:
-            error = 'Invalid credentials. Please try again.'
-    return render_template('login.html', error=error)
+        db_password = ""
+        post = get_db().cursor().execute('''
+        SELECT U.password
+        FROM users U
+        WHERE U.username = ?
+        ''', (username,)).fetchone()
+
+        db_password = post[0]
+        salt = db_password[7:db_password.find("$", 8)]
+        password_salted = salt + password
+        hash_obj.update(password_salted.encode('utf-8'))
+        password_hash = hash_obj.hexdigest()
+        password_in = "$".join([algorithm, salt, password_hash])
+
+        if password_in != db_password:
+            return render_template('login.html', error="Invalid credentials. Please try again.")
+
+        session['username'] = username
+        return redirect('/')
+
+    return render_template('login.html')
 
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
@@ -124,15 +149,13 @@ def signup():
         WHERE U.username = ?
         ) AS user_exist
         ''', (username,)).fetchall()
-        print(user_exist)
         if user_exist[0][0]:
-            return abort(409)
+            return render_template('signup.html', error="Username is taken.")
+
 
         if not password:
-            return abort(400)
+            return render_template('signup.html', error="Please enter a password.")
 
-        print("here")
-        # Password shit
         algorithm = 'sha512'
         salt = uuid.uuid4().hex
         hash_obj = hashlib.new(algorithm)
@@ -140,13 +163,13 @@ def signup():
         hash_obj.update(password_salted.encode('utf-8'))
         password_hash = hash_obj.hexdigest()
         password_db_string = "$".join([algorithm, salt, password_hash])
-
         id = uuid.uuid4().hex
         get_db().cursor().execute('''
         INSERT INTO users
         VALUES (?,?,?)
         ''', (username,id,
               password_db_string))
+        get_db().commit()
         # -------------------------------------#
         session['username'] = username
         return redirect("/")
