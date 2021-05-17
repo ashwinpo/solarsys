@@ -1,5 +1,5 @@
 """SolarSys UI views."""
-from flask import Flask, render_template, url_for, request, session, redirect, flash, g, abort
+from flask import Flask, render_template, url_for, request, session, redirect, flash, g, abort, jsonify
 from flask_cors import CORS
 import json
 import requests
@@ -62,14 +62,44 @@ def show_collider():
 @app.route('/opening_frame', methods=['GET'])
 def show_opening_frame():
     """Display opening frame."""
+    if 'username' not in session:
+        return redirect(url_for('login'))
 
+    sql = ''' SELECT json FROM planets
+            Where username= ? '''
+    content = get_db().cursor().execute(sql, (session['username'],)).fetchone()
+    if content:
+        return redirect('sys_frame')
     context = {}
     return render_template("opening.html", **context)
+
+@app.route('/save', methods=['POST'])
+def save():
+    """Display sys frame."""
+    if 'username' not in session:
+        return redirect(url_for('login'))
+
+    content = request.json
+    sql = ''' INSERT OR REPLACE INTO planets(username, json)
+          VALUES(?,?) '''
+    get_db().cursor().execute(sql,(session['username'], json.dumps(content)))
+    get_db().commit()
+    context = {}
+    return render_template("sys.html", **context)
 
 @app.route('/sys_frame', methods=['GET'])
 def show_sys_frame():
     """Display sys frame."""
-
+    if 'username' not in session:
+        return redirect(url_for('login'))
+    sql = ''' SELECT json FROM planets
+            Where username= ? '''
+    content = get_db().cursor().execute(sql, (session['username'],)).fetchone()
+    if not content:
+        return redirect('opening_frame')
+    data = json.loads(content[0])
+    with open('static/data.txt', 'w') as outfile:
+        json.dump(data, outfile)
     context = {}
     return render_template("sys.html", **context)
 

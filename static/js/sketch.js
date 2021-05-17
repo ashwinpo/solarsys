@@ -2,13 +2,8 @@ let config = {}
 
 function preload() {
   // Get the most recent planets
-  let url = 'http://3.15.100.29/sketch'; //' "http://127.0.0.1:8001/sketch"
-  username = getItem("username")
-  console.log(username)
-  httpPost(url, 'json', {'username': username}).then((data) => {
-    config = data
-    })
-  console.log(config)
+  let url = 'static/data.txt';
+  config = loadJSON(url);
 }
 
 
@@ -23,9 +18,6 @@ let particles = [];
 function setup() {
   createCanvas(windowWidth,windowHeight)
   colorMode(HSB)
-  if(!config.sun){
-    return
-  }
   sun = new Sun(config.sun.d, config.sun.col)
   numPlanets = config.planets.length
   console.log(config)
@@ -57,15 +49,7 @@ function setup() {
   }
 }
 
-setuped = false
 function draw() {
-  if(!config.sun){
-    return
-  }
-  else if(!setuped){
-    setup()
-    setuped = true
-  }
 
   let c1 = color(236, 68, 1)
   let c2 = color(236, 68, 20)

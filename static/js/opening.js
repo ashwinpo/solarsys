@@ -1,6 +1,6 @@
 
 planets = []
-let button, input;
+let button;
 let err_msg = false;
 
 function setup() {
@@ -66,8 +66,7 @@ function draw() {
 
 function cont(){
   let count = 0
-  let config = {  "username": input.value(),
-                  "sun":{
+  let config = {  "sun":{
                     "col": [60, 100, 100],
                     "d": 150 },
                   "planets": []};
@@ -82,11 +81,10 @@ function cont(){
   }
   else{
     err_msg = false;
-    storeItem('username', config.username)
-    let url = 'http://3.15.100.29/api'; //"http://127.0.0.1:8001/api";
+    let url = "http://127.0.0.1:5000/save";
     res = httpPost(url, 'json', config)
     console.log(res)
-    window.location.replace('http://3.15.100.29/sys/sys.html'); //'http://127.0.0.1:8080/sys/sys.html'
+    window.location.replace('http://127.0.0.1:5000/sys_frame'); //'http://127.0.0.1:8080/sys/sys.html'
  }
 }
 
